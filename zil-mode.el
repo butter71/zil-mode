@@ -44,7 +44,7 @@
    ;;       random string
    ("\\(\"\\)\\(AUX\\|OPTIONAL\\)\\(\"\\)"
     (1 "_") (3 "_")))
-  "Syntax property rules for special cases.")
+  "Syntax property rules for ZIL mode special cases.")
 
 (defvar zil-mode-abbrev-table nil)
 (define-abbrev-table 'zil-mode-abbrev-table ())
