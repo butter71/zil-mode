@@ -26,6 +26,11 @@
 
 ;;; Code:
 
+(defvar zil-mode-map
+  (let ((map (make-sparse-keymap)))
+    map)
+  "Keymap for zil-mode.")
+
 (defvar zil-mode-syntax-table
   (let ((st (make-syntax-table)))
     (modify-syntax-entry ?\; "<"  st)
@@ -142,8 +147,9 @@
 (define-derived-mode zil-mode prog-mode "ZIL"
   "Major mode for editing ZIL code.
 
-Entering this mode runs the hooks `zil-mode-hook'.
-..."
+Entering this mode runs the hook `zil-mode-hook'.
+
+\\{zil-mode-map}"
   :syntax-table zil-mode-syntax-table
   :abbrev-table zil-mode-abbrev-table
   (setq-local comment-start ";")
