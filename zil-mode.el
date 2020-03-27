@@ -70,7 +70,6 @@
     )
   "Imenu generic expression for ZIL mode.  See `imenu-generic-expression'.")
 
-;;; (makunbound 'zil-font-lock-keywords)
 (defvar zil-font-lock-keywords
   (eval-when-compile
     (list
