@@ -46,8 +46,8 @@
     (1 "_") (3 "_")))
   "Syntax property rules for ZIL mode special cases.")
 
-(defvar zil-mode-abbrev-table nil)
-(define-abbrev-table 'zil-mode-abbrev-table ())
+(define-abbrev-table 'zil-mode-abbrev-table ()
+  "Abbrev table for ZIL mode.")
 
 (defvar zil-imenu-generic-expression
   '((nil
