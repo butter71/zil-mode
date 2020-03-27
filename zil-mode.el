@@ -137,7 +137,7 @@
      ;; probably need to override syntax-propertize-function to make these work..
      '("\\(\"AUX\"\\|\"OPTIONAL\"\\)"
        (1 font-lock-builtin-face))))
-  "Expressions to highlight in ZIL modes.")
+  "Expressions to highlight in ZIL mode.")
 
 (define-derived-mode zil-mode prog-mode "ZIL"
   "Major mode for editing ZIL code.
