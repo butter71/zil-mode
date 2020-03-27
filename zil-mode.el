@@ -41,16 +41,14 @@
 (define-abbrev-table 'zil-mode-abbrev-table ())
 
 (defvar zil-imenu-generic-expression
-  '(("Routines"
-     "^<ROUTINE\\s-+\\(\\sw+\\)" 1)
+  '((nil
+     "^<\\(ROUTINE\\|DEFINE\\)\\s-+\\(\\sw+\\)" 2)
     ("Macros"
      "^<DEFMAC\\s-+\\(\\sw+\\)" 1)
     ("Constants"
      "^<CONSTANT\\s-+\\(\\sw+\\)" 1)
     ("Globals"
      "^<GLOBAL\\s-+\\(\\sw+\\)" 1)
-    ("Variables"
-     "^<DEFINE\\s-+\\(\\sw+\\)" 1)
     ("Rooms"
      "^<ROOM\\s-+\\(\\sw+\\)" 1)
     ("Objects"
