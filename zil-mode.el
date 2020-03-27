@@ -20,7 +20,6 @@
 
 ;;  - indentation rules
 ;;  - top-level "..." as comments
-;;  - recognize "AUX", "OPTIONAL" as built-ins and not strings
 ;;  - recognize following as multi-line comment
 ;;        ; <ROUTINE ...
 ;;                   ...>
@@ -37,6 +36,15 @@
     (modify-syntax-entry ?\> ")" st)
     (modify-syntax-entry ?\" "\"" st)
     st))
+
+(defconst zil-syntax-propertize-function
+  (syntax-propertize-rules
+   ;; "AUX", "OPTIONAL" are used for keyword args
+   ;; TODO: check that it's within an argument list and not just a
+   ;;       random string
+   ("\\(\"\\)\\(AUX\\|OPTIONAL\\)\\(\"\\)"
+    (1 "_") (3 "_")))
+  "Syntax property rules for special cases.")
 
 (defvar zil-mode-abbrev-table nil)
 (define-abbrev-table 'zil-mode-abbrev-table ())
@@ -145,6 +153,7 @@ Entering this mode runs the hooks `zil-mode-hook'.
   (setq-local comment-column 40)
   (setq-local imenu-case-fold-search t)
   (setq-local imenu-generic-expression zil-imenu-generic-expression)
+  (setq-local syntax-propertize-function zil-syntax-propertize-function)
   (setq font-lock-defaults '(zil-font-lock-keywords)))
 
 (defgroup zil nil
