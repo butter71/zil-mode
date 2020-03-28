@@ -64,12 +64,12 @@
    ;; "AUX", "OPTIONAL", ... are used for keyword args
    ;;   TODO: check it's within an arglist and not just a random string.
    ((rx (group "\"") (or "AUX" "OPTIONAL" "OPT" "TUPLE" "ARGS") (group "\""))
-    (1 "_") (2 "_")))
+    (1 "_") (2 "_"))
    ;; ("\\(\"\\)\\(AUX\\|OPTIONAL\\|TUPLE\\|ARGS\\)\\(\"\\)"
    ;;  (1 "_") (3 "_"))
    ("\""
     (0 (ignore (zil--top-level-commentize)))))
-  "Syntax property rules for ZIL mode special cases.")
+   "Syntax property rules for ZIL mode special cases.")
 
 (define-abbrev-table 'zil-mode-abbrev-table ()
   "Abbrev table for ZIL mode.")
