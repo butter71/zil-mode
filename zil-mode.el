@@ -48,7 +48,7 @@
 	  ;;   we're in a comment or outside a string
 	  ((eq ?\\ (char-before (1- (point))))
 	   nil)
-	  ((> 0 (car ppss))		; not top-level
+	  ((> (car ppss) 0)		; not top-level
 	   nil)
 	  ((nth 3 ppss)			; inside a string
 	   nil)
