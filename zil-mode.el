@@ -19,7 +19,6 @@
 ;;; TODO
 
 ;;  - indentation rules
-;;  - ;"..." doesn't work correctly
 
 ;;; Code:
 
@@ -66,10 +65,12 @@
 	   nil)
 	  ((nth 3 ppss)			; inside a string
 	   nil)
-	  ((nth 4 ppss)			; at end of quote comment
+	  ((nth 4 ppss)			; closing quote
 	   (put-text-property (1- (point)) (point)
 			      'syntax-table (string-to-syntax ">")))
-	  (t				; at beginning of quote comment
+	  ((eq ?\; (char-before (1- (point)))) ; opening quote, but inside ?\; comment
+	   nil)
+	  (t				; opening quote
 	   (put-text-property (1- (point)) (point)
 			      'syntax-table (string-to-syntax "<"))))))
 
