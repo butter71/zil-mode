@@ -62,10 +62,11 @@
 (defconst zil-syntax-propertize-function
   (syntax-propertize-rules
    ;; "AUX", "OPTIONAL", ... are used for keyword args
-   ;; TODO: check that it's within an argument list and not just a
-   ;;       random string
-   ("\\(\"\\)\\(AUX\\|OPTIONAL\\|TUPLE\\|ARGS\\)\\(\"\\)"
-    (1 "_") (3 "_"))
+   ;;   TODO: check it's within an arglist and not just a random string.
+   ((rx (group "\"") (or "AUX" "OPTIONAL" "OPT" "TUPLE" "ARGS") (group "\""))
+    (1 "_") (2 "_")))
+   ;; ("\\(\"\\)\\(AUX\\|OPTIONAL\\|TUPLE\\|ARGS\\)\\(\"\\)"
+   ;;  (1 "_") (3 "_"))
    ("\""
     (0 (ignore (zil--top-level-commentize)))))
   "Syntax property rules for ZIL mode special cases.")
@@ -155,8 +156,11 @@
        (1 font-lock-keyword-face) (2 font-lock-constant-face))
       ("<\\(GLOBAL\\|\\)\\s-*\\(\\sw+\\)"
        (1 font-lock-keyword-face) (2 font-lock-variable-name-face))
-      ("\\(\"AUX\"\\|\"OPTIONAL\"\\|\"TUPLE\"\\|\"ARGS\"\\)"
-       (1 font-lock-builtin-face))))
+      (,(rx "\"" (or "AUX" "OPTIONAL" "OPT" "TUPLE" "ARGS") "\"")
+       (0 font-lock-builtin-face))
+      ;; ("\\(\"AUX\"\\|\"OPTIONAL\"\\|\"TUPLE\"\\|\"ARGS\"\\)"
+      ;;  (1 font-lock-builtin-face))
+      ))
   "Expressions to highlight in ZIL mode.")
 
 (define-derived-mode zil-mode prog-mode "ZIL"
