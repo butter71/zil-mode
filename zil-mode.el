@@ -44,7 +44,6 @@
   "Put `syntax-table' property correctly on top-level ?\\\" comments."
   (let ((ppss (save-excursion (backward-char) (syntax-ppss))))
     (cond ((nth 5 ppss)			; it's quoted
-	   (message "quoted: %d" (point))
 	   nil)
 	  ;; manually check if quoted.  not sure if needed because
 	  ;;   we're in a comment or outside a string
