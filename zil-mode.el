@@ -19,9 +19,7 @@
 ;;; TODO
 
 ;;  - indentation rules
-;;  - recognize following as multi-line comment
-;;        ; <ROUTINE ...
-;;                   ...>
+;;  - add comment-dwim support
 
 ;;; Code:
 
@@ -46,7 +44,7 @@
     (modify-syntax-entry ?\> ")<" st)
 
     ;; Prefixes
-    (modify-syntax-entry ?\' "'" st)
+    (modify-syntax-entry ?\, "'" st)
     (modify-syntax-entry ?\. "'" st)
 
     ;; Misc
