@@ -126,7 +126,7 @@
 		"MAPR" "MAPRET" "MAPSTOP" "MARGIN" "MAX" "MEMBER" "MEMQ" "MENU"
 		"MIN" "MOBLIST" "MOD" "MOUSE-INFO" "MOUSE-LIMIT" "MOVE" "MSETG"
 		"MUL" "N==?" "N=?" "NEVER-ZAP-TO-SOURCE-DIRECTORY?" "NEW-ADD-WORD"
-		"NEWTYPE" "NEXT" "NEXT?" "NEXTP" "NOT" "NTH" "OBJECT" "OBLIST?"
+		"NEWTYPE" "NEXT" "NEXT?" "NEXTP" "NOT" "NTH" "OBLIST?"
 		"OFFSET" "OPEN" "OR" "OR?" "ORB" "ORDER-FLAGS?" "ORDER-OBJECTS?"
 		"ORDER-TREE?" "ORIGINAL?" "PACKAGE" "PARSE" "PICFILE" "PICINF"
 		"PICSET" "PLTABLE" "PNAME" "POP" "PREP-SYNONYM" "PRIMTYPE" "PRIN1"
@@ -136,7 +136,7 @@
 		"PUT-PURE-HERE" "PUTB" "PUTP" "PUTPROP" "PUTREST" "QUIT" "QUOTE"
 		"RANDOM" "READ" "READSTRING" "REMOVE" "RENTRY" "REPEAT"
 		"REPLACE-DEFINITION" "REST" "RESTART" "RESTORE" "RETURN" "RFALSE"
-		"RFATAL" "ROOM" "ROOT" "ROUTINE" "ROUTINE-FLAGS" "RSTACK" "RTRUE"
+		"RFATAL" "ROOT" "ROUTINE" "ROUTINE-FLAGS" "RSTACK" "RTRUE"
 		"SAVE" "SCREEN" "SCROLL" "SET" "SET-DEFSTRUCT-FILE-DEFAULTS"
 		"SETG" "SETG20" "SHIFT" "SNAME" "SORT" "SOUND" "SPLIT" "SPNAME"
 		"STACK" "STRING" "STRUCTURED?" "SUB" "SUBSTRUC" "SYNONYM" "SYNTAX"
@@ -154,13 +154,10 @@
        (1 font-lock-keyword-face) (2 font-lock-function-name-face))
       ("<\\(CONSTANT\\)\\s-*\\(\\sw+\\)"
        (1 font-lock-keyword-face) (2 font-lock-constant-face))
-      ("<\\(GLOBAL\\|\\)\\s-*\\(\\sw+\\)"
+      ("<\\(GLOBAL\\|ROOM\\|OBJECT\\)\\s-*\\(\\sw+\\)"
        (1 font-lock-keyword-face) (2 font-lock-variable-name-face))
       (,(rx "\"" (or "AUX" "OPTIONAL" "OPT" "TUPLE" "ARGS") "\"")
-       (0 font-lock-builtin-face))
-      ;; ("\\(\"AUX\"\\|\"OPTIONAL\"\\|\"TUPLE\"\\|\"ARGS\"\\)"
-      ;;  (1 font-lock-builtin-face))
-      ))
+       (0 font-lock-builtin-face))))
   "Expressions to highlight in ZIL mode.")
 
 (define-derived-mode zil-mode prog-mode "ZIL"
