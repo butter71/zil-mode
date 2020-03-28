@@ -19,7 +19,6 @@
 ;;; TODO
 
 ;;  - indentation rules
-;;  - top-level "..." as comments
 ;;  - recognize following as multi-line comment
 ;;        ; <ROUTINE ...
 ;;                   ...>
