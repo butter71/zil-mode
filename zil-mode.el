@@ -166,11 +166,7 @@ Entering this mode runs the hook `zil-mode-hook'.
 \\{zil-mode-map}"
   :syntax-table zil-mode-syntax-table
   :abbrev-table zil-mode-abbrev-table
-  (setq-local comment-start ";")
-  (setq-local comment-add 1)
-  (setq-local comment-start-skip ";+[ \t]*")
-  (setq-local comment-use-syntax t)
-  (setq-local comment-column 40)
+  (setq-local comment-use-syntax nil)
   (setq-local imenu-case-fold-search t)
   (setq-local imenu-generic-expression zil-imenu-generic-expression)
   (setq-local syntax-propertize-function zil-syntax-propertize-function)
