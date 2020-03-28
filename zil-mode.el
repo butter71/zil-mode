@@ -65,8 +65,6 @@
    ;;   TODO: check it's within an arglist and not just a random string.
    ((rx (group "\"") (or "AUX" "OPTIONAL" "OPT" "TUPLE" "ARGS") (group "\""))
     (1 "_") (2 "_"))
-   ;; ("\\(\"\\)\\(AUX\\|OPTIONAL\\|TUPLE\\|ARGS\\)\\(\"\\)"
-   ;;  (1 "_") (3 "_"))
    ("\""
     (0 (ignore (zil--top-level-commentize)))))
    "Syntax property rules for ZIL mode special cases.")
