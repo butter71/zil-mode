@@ -111,7 +111,7 @@
       (if (or (nth 3 state)
               (nth 4 state))
           (zil--search-commented-sexps-internal limit)
-	(goto-char start)
+	(goto-char (1+ start))
 	(forward-sexp 1)
 	(setf (elt md 3) (point))
         (set-match-data md)
