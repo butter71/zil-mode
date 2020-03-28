@@ -65,7 +65,7 @@
    ;; "AUX", "OPTIONAL", ... are used for keyword args
    ;; TODO: check that it's within an argument list and not just a
    ;;       random string
-   ("\\(\"\\)\\(AUX\\|OPTIONAL\\|TUPLE\\)\\(\"\\)"
+   ("\\(\"\\)\\(AUX\\|OPTIONAL\\|TUPLE\\|ARGS\\)\\(\"\\)"
     (1 "_") (3 "_"))
    ("\""
     (0 (ignore (zil--top-level-commentize)))))
@@ -140,7 +140,7 @@
 		"SAVE" "SCREEN" "SCROLL" "SET" "SET-DEFSTRUCT-FILE-DEFAULTS"
 		"SETG" "SETG20" "SHIFT" "SNAME" "SORT" "SOUND" "SPLIT" "SPNAME"
 		"STACK" "STRING" "STRUCTURED?" "SUB" "SUBSTRUC" "SYNONYM" "SYNTAX"
-		"T?" "TABLE" "TELL" "TELL-TOKENS" "THROW" "TIME" "TOP" "TUPLE"
+		"T?" "TABLE" "TELL" "TELL-TOKENS" "THROW" "TIME" "TOP"
 		"TYPE" "TYPE?" "TYPEPRIM" "UNASSIGN" "UNPARSE" "USE" "USE-WHEN"
 		"USL" "VALID-TYPE?" "VALUE" "VECTOR" "VERB-SYNONYM" "VERIFY"
 		"VERSION" "VERSION?" "VOC" "WARN-AS-ERROR?" "WINATTR" "WINGET"
@@ -156,7 +156,7 @@
        (1 font-lock-keyword-face) (2 font-lock-constant-face))
       ("<\\(GLOBAL\\|\\)\\s-*\\(\\sw+\\)"
        (1 font-lock-keyword-face) (2 font-lock-variable-name-face))
-      ("\\(\"AUX\"\\|\"OPTIONAL\"\\|\"TUPLE\"\\)"
+      ("\\(\"AUX\"\\|\"OPTIONAL\"\\|\"TUPLE\"\\|\"ARGS\"\\)"
        (1 font-lock-builtin-face))))
   "Expressions to highlight in ZIL mode.")
 
