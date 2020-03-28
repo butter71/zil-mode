@@ -40,13 +40,36 @@
     (modify-syntax-entry ?\" "\"" st)
     st))
 
+(defun zil--top-level-commentize ()
+  "Put `syntax-table' property correctly on top-level ?\\\" comments."
+  (let ((ppss (save-excursion (backward-char) (syntax-ppss))))
+    (cond ((nth 5 ppss)			; it's quoted
+	   (message "quoted: %d" (point))
+	   nil)
+	  ;; manually check if quoted.  not sure if needed because
+	  ;;   we're in a comment or outside a string
+	  ((eq ?\\ (char-before (1- (point))))
+	   nil)
+	  ((> 0 (car ppss))		; not top-level
+	   nil)
+	  ((nth 3 ppss)			; inside a string
+	   nil)
+	  ((nth 4 ppss)			; at end of quote comment
+	   (put-text-property (1- (point)) (point)
+			      'syntax-table (string-to-syntax ">")))
+	  (t				; at beginning of quote comment
+	   (put-text-property (1- (point)) (point)
+			      'syntax-table (string-to-syntax "<"))))))
+
 (defconst zil-syntax-propertize-function
   (syntax-propertize-rules
-   ;; "AUX", "OPTIONAL" are used for keyword args
+   ;; "AUX", "OPTIONAL", ... are used for keyword args
    ;; TODO: check that it's within an argument list and not just a
    ;;       random string
-   ("\\(\"\\)\\(AUX\\|OPTIONAL\\)\\(\"\\)"
-    (1 "_") (3 "_")))
+   ("\\(\"\\)\\(AUX\\|OPTIONAL\\|TUPLE\\)\\(\"\\)"
+    (1 "_") (3 "_"))
+   ("\""
+    (0 (ignore (zil--top-level-commentize)))))
   "Syntax property rules for ZIL mode special cases.")
 
 (define-abbrev-table 'zil-mode-abbrev-table ()
@@ -70,74 +93,71 @@
 
 (defvar zil-font-lock-keywords
   (eval-when-compile
-    (list
-     (cons
-      (concat
-       "<" (regexp-opt
-	    '("*" "+" "-" "/" "0?" "1?" "==?" "=?" "ADD" "ADD-TELL-TOKENS"
-	      "ADD-WORD" "ADJ-SYNONYM" "AGAIN" "ALLTYPES" "AND" "AND?" "ANDB"
-	      "APPLICABLE?" "APPLY" "APPLYTYPE" "ASCII" "ASH" "ASHIFT"
-	      "ASK-FOR-PICTURE-FILE?" "ASSIGNED?" "ASSOCIATIONS" "ATOM" "AVALUE"
-	      "BACK" "BAND" "BCOM" "BEGIN-SEGMENT" "BIND" "BIT-SYNONYM" "BLOAT"
-	      "BLOCK" "BOR" "BOUND?" "BTST" "BUFOUT" "BUZZ" "BYTE" "CALL"
-	      "CATCH" "CHECK-VERSION?" "CHECKPOINT" "CHECKU" "CHRSET" "CHTYPE"
-	      "CLEAR" "CLOSE" "COLOR" "COMPILATION-FLAG"
-	      "COMPILATION-FLAG-DEFAULT" "COMPILATION-FLAG-VALUE" "COMPILING?"
-	      "COND" "CONS" "CONSTANT" "COPYT" "CRLF" "CURGET" "CURSET" "DCLEAR"
-	      "DEC" "DECL-CHECK" "DECL?" "DEFAULT-DEFINITION" "DEFAULTS-DEFINED"
-	      "DEFINE" "DEFINE-GLOBALS" "DEFINE-SEGMENT" "DEFINE20"
-	      "DEFINITIONS" "DEFMAC" "DEFSTRUCT" "DELAY-DEFINITION"
-	      "DESC-BUILTINS!-YOMIN" "DIR-SYNONYM" "DIRECTIONS" "DIRIN" "DIROUT"
-	      "DISPLAY" "DIV" "DLESS?" "DO" "EMPTY?" "END-DEFINITIONS"
-	      "END-SEGMENT" "ENDBLOCK" "ENDLOAD" "ENDPACKAGE" "ENDSECTION"
-	      "ENTRY" "EQUAL?" "EQVB" "ERASE" "ERROR" "EVAL" "EVAL-IN-SEGMENT"
-	      "EVALTYPE" "EXPAND" "F?" "FCLEAR" "FILE-FLAGS" "FILE-LENGTH"
-	      "FIRST?" "FLOAD" "FONT" "FORM" "FREQUENT-WORDS?" "FSET" "FSET?"
-	      "FSTACK" "FUNCTION" "FUNNY-GLOBALS?" "G=?" "G?" "GASSIGNED?"
-	      "GBOUND?" "GC" "GC-MON" "GDECL" "GET" "GET-DECL" "GETB" "GETP"
-	      "GETPROP" "GETPT" "GLOBAL" "GROW" "GRTR?" "GUNASSIGN" "GVAL"
-	      "HLIGHT" "ID" "IFFLAG" "IGRTR?" "ILIST" "IMAGE" "IN?" "INC"
-	      "INCLUDE" "INCLUDE-WHEN" "INDENT-TO" "INDEX" "INDICATOR" "INPUT"
-	      "INSERT" "INSERT-FILE" "INTBL?" "IRESTORE" "ISAVE" "ISTRING"
-	      "ITABLE" "ITEM" "IVECTOR" "L=?" "L?" "LANGUAGE" "LEGAL?" "LENGTH"
-	      "LENGTH?" "LESS?" "LEX" "LINK" "LIST" "LOC" "LONG-WORDS?" "LOOKUP"
-	      "LOWCORE" "LOWCORE-TABLE" "LPARSE" "LSH" "LTABLE" "LVAL" "M-HPOS"
-	      "MAKE-GVAL" "MAP-CONTENTS" "MAP-DIRECTIONS" "MAPF" "MAPLEAVE"
-	      "MAPR" "MAPRET" "MAPSTOP" "MARGIN" "MAX" "MEMBER" "MEMQ" "MENU"
-	      "MIN" "MOBLIST" "MOD" "MOUSE-INFO" "MOUSE-LIMIT" "MOVE" "MSETG"
-	      "MUL" "N==?" "N=?" "NEVER-ZAP-TO-SOURCE-DIRECTORY?" "NEW-ADD-WORD"
-	      "NEWTYPE" "NEXT" "NEXT?" "NEXTP" "NOT" "NTH" "OBJECT" "OBLIST?"
-	      "OFFSET" "OPEN" "OR" "OR?" "ORB" "ORDER-FLAGS?" "ORDER-OBJECTS?"
-	      "ORDER-TREE?" "ORIGINAL?" "PACKAGE" "PARSE" "PICFILE" "PICINF"
-	      "PICSET" "PLTABLE" "PNAME" "POP" "PREP-SYNONYM" "PRIMTYPE" "PRIN1"
-	      "PRINC" "PRINT" "PRINT-MANY" "PRINTB" "PRINTC" "PRINTD" "PRINTF"
-	      "PRINTI" "PRINTN" "PRINTR" "PRINTT" "PRINTTYPE" "PRINTU" "PROG"
-	      "PROPDEF" "PTABLE" "PTSIZE" "PUSH" "PUT" "PUT-DECL"
-	      "PUT-PURE-HERE" "PUTB" "PUTP" "PUTPROP" "PUTREST" "QUIT" "QUOTE"
-	      "RANDOM" "READ" "READSTRING" "REMOVE" "RENTRY" "REPEAT"
-	      "REPLACE-DEFINITION" "REST" "RESTART" "RESTORE" "RETURN" "RFALSE"
-	      "RFATAL" "ROOM" "ROOT" "ROUTINE" "ROUTINE-FLAGS" "RSTACK" "RTRUE"
-	      "SAVE" "SCREEN" "SCROLL" "SET" "SET-DEFSTRUCT-FILE-DEFAULTS"
-	      "SETG" "SETG20" "SHIFT" "SNAME" "SORT" "SOUND" "SPLIT" "SPNAME"
-	      "STACK" "STRING" "STRUCTURED?" "SUB" "SUBSTRUC" "SYNONYM" "SYNTAX"
-	      "T?" "TABLE" "TELL" "TELL-TOKENS" "THROW" "TIME" "TOP" "TUPLE"
-	      "TYPE" "TYPE?" "TYPEPRIM" "UNASSIGN" "UNPARSE" "USE" "USE-WHEN"
-	      "USL" "VALID-TYPE?" "VALUE" "VECTOR" "VERB-SYNONYM" "VERIFY"
-	      "VERSION" "VERSION?" "VOC" "WARN-AS-ERROR?" "WINATTR" "WINGET"
-	      "WINPOS" "WINPUT" "WINSIZE" "XFLOAD" "XORB" "XPUSH" "ZAPPLY"
-	      "ZBACK" "ZBUFOUT" "ZCRLF" "ZERO?" "ZGET" "ZIP-OPTIONS" "ZPACKAGE"
-	      "ZPRINT" "ZPRINTB" "ZPUT" "ZRANDOM" "ZREAD" "ZREMOVE" "ZREST"
-	      "ZRESTORE" "ZSAVE" "ZSECTION" "ZSTART" "ZSTR-OFF" "ZSTR-ON"
-	      "ZWSTR" "ZZPACKAGE" "ZZSECTION") t)
-       "\\>") 1)
-     '("<\\(ROUTINE\\|DEFMAC\\)\\s-*\\(\\sw+\\)"
+    `((,(concat
+	 "<" (regexp-opt
+	      '("*" "+" "-" "/" "0?" "1?" "==?" "=?" "ADD" "ADD-TELL-TOKENS"
+		"ADD-WORD" "ADJ-SYNONYM" "AGAIN" "ALLTYPES" "AND" "AND?" "ANDB"
+		"APPLICABLE?" "APPLY" "APPLYTYPE" "ASCII" "ASH" "ASHIFT"
+		"ASK-FOR-PICTURE-FILE?" "ASSIGNED?" "ASSOCIATIONS" "ATOM" "AVALUE"
+		"BACK" "BAND" "BCOM" "BEGIN-SEGMENT" "BIND" "BIT-SYNONYM" "BLOAT"
+		"BLOCK" "BOR" "BOUND?" "BTST" "BUFOUT" "BUZZ" "BYTE" "CALL"
+		"CATCH" "CHECK-VERSION?" "CHECKPOINT" "CHECKU" "CHRSET" "CHTYPE"
+		"CLEAR" "CLOSE" "COLOR" "COMPILATION-FLAG"
+		"COMPILATION-FLAG-DEFAULT" "COMPILATION-FLAG-VALUE" "COMPILING?"
+		"COND" "CONS" "CONSTANT" "COPYT" "CRLF" "CURGET" "CURSET" "DCLEAR"
+		"DEC" "DECL-CHECK" "DECL?" "DEFAULT-DEFINITION" "DEFAULTS-DEFINED"
+		"DEFINE" "DEFINE-GLOBALS" "DEFINE-SEGMENT" "DEFINE20"
+		"DEFINITIONS" "DEFMAC" "DEFSTRUCT" "DELAY-DEFINITION"
+		"DESC-BUILTINS!-YOMIN" "DIR-SYNONYM" "DIRECTIONS" "DIRIN" "DIROUT"
+		"DISPLAY" "DIV" "DLESS?" "DO" "EMPTY?" "END-DEFINITIONS"
+		"END-SEGMENT" "ENDBLOCK" "ENDLOAD" "ENDPACKAGE" "ENDSECTION"
+		"ENTRY" "EQUAL?" "EQVB" "ERASE" "ERROR" "EVAL" "EVAL-IN-SEGMENT"
+		"EVALTYPE" "EXPAND" "F?" "FCLEAR" "FILE-FLAGS" "FILE-LENGTH"
+		"FIRST?" "FLOAD" "FONT" "FORM" "FREQUENT-WORDS?" "FSET" "FSET?"
+		"FSTACK" "FUNCTION" "FUNNY-GLOBALS?" "G=?" "G?" "GASSIGNED?"
+		"GBOUND?" "GC" "GC-MON" "GDECL" "GET" "GET-DECL" "GETB" "GETP"
+		"GETPROP" "GETPT" "GLOBAL" "GROW" "GRTR?" "GUNASSIGN" "GVAL"
+		"HLIGHT" "ID" "IFFLAG" "IGRTR?" "ILIST" "IMAGE" "IN?" "INC"
+		"INCLUDE" "INCLUDE-WHEN" "INDENT-TO" "INDEX" "INDICATOR" "INPUT"
+		"INSERT" "INSERT-FILE" "INTBL?" "IRESTORE" "ISAVE" "ISTRING"
+		"ITABLE" "ITEM" "IVECTOR" "L=?" "L?" "LANGUAGE" "LEGAL?" "LENGTH"
+		"LENGTH?" "LESS?" "LEX" "LINK" "LIST" "LOC" "LONG-WORDS?" "LOOKUP"
+		"LOWCORE" "LOWCORE-TABLE" "LPARSE" "LSH" "LTABLE" "LVAL" "M-HPOS"
+		"MAKE-GVAL" "MAP-CONTENTS" "MAP-DIRECTIONS" "MAPF" "MAPLEAVE"
+		"MAPR" "MAPRET" "MAPSTOP" "MARGIN" "MAX" "MEMBER" "MEMQ" "MENU"
+		"MIN" "MOBLIST" "MOD" "MOUSE-INFO" "MOUSE-LIMIT" "MOVE" "MSETG"
+		"MUL" "N==?" "N=?" "NEVER-ZAP-TO-SOURCE-DIRECTORY?" "NEW-ADD-WORD"
+		"NEWTYPE" "NEXT" "NEXT?" "NEXTP" "NOT" "NTH" "OBJECT" "OBLIST?"
+		"OFFSET" "OPEN" "OR" "OR?" "ORB" "ORDER-FLAGS?" "ORDER-OBJECTS?"
+		"ORDER-TREE?" "ORIGINAL?" "PACKAGE" "PARSE" "PICFILE" "PICINF"
+		"PICSET" "PLTABLE" "PNAME" "POP" "PREP-SYNONYM" "PRIMTYPE" "PRIN1"
+		"PRINC" "PRINT" "PRINT-MANY" "PRINTB" "PRINTC" "PRINTD" "PRINTF"
+		"PRINTI" "PRINTN" "PRINTR" "PRINTT" "PRINTTYPE" "PRINTU" "PROG"
+		"PROPDEF" "PTABLE" "PTSIZE" "PUSH" "PUT" "PUT-DECL"
+		"PUT-PURE-HERE" "PUTB" "PUTP" "PUTPROP" "PUTREST" "QUIT" "QUOTE"
+		"RANDOM" "READ" "READSTRING" "REMOVE" "RENTRY" "REPEAT"
+		"REPLACE-DEFINITION" "REST" "RESTART" "RESTORE" "RETURN" "RFALSE"
+		"RFATAL" "ROOM" "ROOT" "ROUTINE" "ROUTINE-FLAGS" "RSTACK" "RTRUE"
+		"SAVE" "SCREEN" "SCROLL" "SET" "SET-DEFSTRUCT-FILE-DEFAULTS"
+		"SETG" "SETG20" "SHIFT" "SNAME" "SORT" "SOUND" "SPLIT" "SPNAME"
+		"STACK" "STRING" "STRUCTURED?" "SUB" "SUBSTRUC" "SYNONYM" "SYNTAX"
+		"T?" "TABLE" "TELL" "TELL-TOKENS" "THROW" "TIME" "TOP" "TUPLE"
+		"TYPE" "TYPE?" "TYPEPRIM" "UNASSIGN" "UNPARSE" "USE" "USE-WHEN"
+		"USL" "VALID-TYPE?" "VALUE" "VECTOR" "VERB-SYNONYM" "VERIFY"
+		"VERSION" "VERSION?" "VOC" "WARN-AS-ERROR?" "WINATTR" "WINGET"
+		"WINPOS" "WINPUT" "WINSIZE" "XFLOAD" "XORB" "XPUSH" "ZAPPLY"
+		"ZBACK" "ZBUFOUT" "ZCRLF" "ZERO?" "ZGET" "ZIP-OPTIONS" "ZPACKAGE"
+		"ZPRINT" "ZPRINTB" "ZPUT" "ZRANDOM" "ZREAD" "ZREMOVE" "ZREST"
+		"ZRESTORE" "ZSAVE" "ZSECTION" "ZSTART" "ZSTR-OFF" "ZSTR-ON"
+		"ZWSTR" "ZZPACKAGE" "ZZSECTION") t)
+	 "\\>") (1 font-lock-keyword-face))
+      ("<\\(ROUTINE\\|DEFMAC\\|DEFINE\\)\\s-*\\(\\sw+\\)"
        (1 font-lock-keyword-face) (2 font-lock-function-name-face))
-     '("<\\(CONSTANT\\)\\s-*\\(\\sw+\\)"
+      ("<\\(CONSTANT\\)\\s-*\\(\\sw+\\)"
        (1 font-lock-keyword-face) (2 font-lock-constant-face))
-     '("<\\(GLOBAL\\|DEFINE\\)\\s-*\\(\\sw+\\)"
+      ("<\\(GLOBAL\\|\\)\\s-*\\(\\sw+\\)"
        (1 font-lock-keyword-face) (2 font-lock-variable-name-face))
-     ;; probably need to override syntax-propertize-function to make these work..
-     '("\\(\"AUX\"\\|\"OPTIONAL\"\\)"
+      ("\\(\"AUX\"\\|\"OPTIONAL\"\\|\"TUPLE\"\\)"
        (1 font-lock-builtin-face))))
   "Expressions to highlight in ZIL mode.")
 
