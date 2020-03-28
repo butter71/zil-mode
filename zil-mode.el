@@ -32,10 +32,25 @@
 
 (defvar zil-mode-syntax-table
   (let ((st (make-syntax-table)))
-    (modify-syntax-entry ?\- "w" st)
+    ;; Word syntax
+    (modify-syntax-entry '(?0 . ?9) "w" st)
+    (modify-syntax-entry '(?a . ?z) "w" st)
+    (modify-syntax-entry '(?A . ?Z) "w" st)
+    (modify-syntax-entry ?- "w" st)
     (modify-syntax-entry ?\? "w" st)
-    (modify-syntax-entry ?\< "(" st)
-    (modify-syntax-entry ?\> ")" st)
+
+    ;; Delimiters
+    (modify-syntax-entry ?\( "()" st)
+    (modify-syntax-entry ?\) ")(" st)
+    (modify-syntax-entry ?\< "(>" st)
+    (modify-syntax-entry ?\> ")<" st)
+
+    ;; Prefixes
+    (modify-syntax-entry ?\' "'" st)
+    (modify-syntax-entry ?\. "'" st)
+
+    ;; Misc
+    (modify-syntax-entry ?\\ "\\" st)
     (modify-syntax-entry ?\" "\"" st)
     st))
 
