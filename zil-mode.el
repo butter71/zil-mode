@@ -19,12 +19,13 @@
 ;;; TODO
 
 ;;  - indentation rules
-;;  - add comment-dwim support
+;;  - ;"..." doesn't work correctly
 
 ;;; Code:
 
 (defvar zil-mode-map
   (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "M-;") 'zil-comment-dwim)
     map)
   "Keymap for zil-mode.")
 
@@ -200,6 +201,38 @@ and `(match-end 1)'."
        (0 font-lock-builtin-face))
       (zil--search-commented-sexps (1 font-lock-comment-face t))))
   "Expressions to highlight in ZIL mode.")
+
+(defun zil--find-comment ()
+  "Return position of ?\\; if point is located within a comment.
+Otherwise return nil."
+  (if (looking-at ";")
+      (point)
+    (save-excursion
+      (skip-syntax-backward "w_'\"")
+      (condition-case nil
+	  (progn
+	    (while (not (eq ?\; (char-before (point))))
+	      (up-list -1 t))
+	    (1- (point)))
+	(beginning-of-file nil)
+	(scan-error        nil)))))
+
+(defun zil-comment-dwim (n)
+  "Toggle comment status of sexp at point.  With a prefix, go up N
+sexps and add comment there."
+  (interactive "p")
+
+  (save-excursion
+   (let ((cpos (zil--find-comment)))
+     (cond
+      ((integerp cpos)
+       (goto-char cpos)
+       (delete-char 1))
+      (t
+       (save-excursion
+	 (skip-syntax-backward "w_'\"")
+	 (up-list (- (1- n)) t)
+	 (insert ";")))))))
 
 (define-derived-mode zil-mode prog-mode "ZIL"
   "Major mode for editing ZIL code.
