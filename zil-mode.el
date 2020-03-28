@@ -88,6 +88,35 @@
     )
   "Imenu generic expression for ZIL mode.  See `imenu-generic-expression'.")
 
+(defun zil--search-commented-sexps-internal (limit)
+  "Search for a ?\\; comment forward stopping at LIMIT."
+  (when (search-forward-regexp "\\(;\\)" limit t)
+    (let* ((md (match-data))
+           (start (match-beginning 1))
+           (state (syntax-ppss start)))
+      ;; inside string or comment?
+      (if (or (nth 3 state)
+              (nth 4 state))
+          (zil--search-commented-sexps-internal limit)
+	(goto-char start)
+	(forward-sexp 1)
+	(setf (elt md 3) (point))
+        (set-match-data md)
+        t))))
+
+(defun zil--search-commented-sexps (limit)
+  "Find commented sexps and set the match data.
+Search from point up to LIMIT.  The region that should be
+considered a comment is between `(match-beginning 1)'
+and `(match-end 1)'."
+  (let ((result 'retry))
+    (while (and (eq result 'retry) (<= (point) limit))
+      (condition-case nil
+          (setq result (zil--search-commented-sexps-internal limit))
+        (end-of-file (setq result nil))
+        (scan-error  (setq result 'retry))))
+    result))
+
 (defvar zil-font-lock-keywords
   (eval-when-compile
     `((,(concat
@@ -155,7 +184,8 @@
       ("<\\(GLOBAL\\|ROOM\\|OBJECT\\)\\s-*\\(\\sw+\\)"
        (1 font-lock-keyword-face) (2 font-lock-variable-name-face))
       (,(rx "\"" (or "AUX" "OPTIONAL" "OPT" "TUPLE" "ARGS") "\"")
-       (0 font-lock-builtin-face))))
+       (0 font-lock-builtin-face))
+      (zil--search-commented-sexps (1 font-lock-comment-face t))))
   "Expressions to highlight in ZIL mode.")
 
 (define-derived-mode zil-mode prog-mode "ZIL"
@@ -169,6 +199,7 @@ Entering this mode runs the hook `zil-mode-hook'.
   (setq-local comment-use-syntax nil)
   (setq-local imenu-case-fold-search t)
   (setq-local imenu-generic-expression zil-imenu-generic-expression)
+  (setq-local font-lock-multiline t)
   (setq-local syntax-propertize-function zil-syntax-propertize-function)
   (setq font-lock-defaults '(zil-font-lock-keywords)))
 
