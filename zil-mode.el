@@ -222,16 +222,16 @@ and add comment there."
 	(col (current-column)))
     (save-excursion
       (goto-char indent-point)
-      (cond ((nth 3 state)	; inside a string
-	     nil)			; ... do nothing
-	    ((and (> (car state) 0) ; \" not at top-level
+      (cond ((nth 3 state)		; inside a string
+	     nil)
+	    ((and (> (car state) 0)	; \" not at top-level
 		  (looking-at "^\\s-*\""))
-	     0)			; ... left-align
-	    ((= col 0)
+	     0)
+	    ((= col 0)			; prev line is left-aligned string
 	     (goto-char pos)
 	     (backward-sexp)
 	     (current-column))
-	    (t			; else)
+	    (t
 	     nil)))))
 
 (define-derived-mode zil-mode prog-mode "ZIL"
