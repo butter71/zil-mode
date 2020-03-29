@@ -52,37 +52,12 @@
     (modify-syntax-entry ?\" "\"" st)
     st))
 
-(defun zil--top-level-commentize ()
-  "Put `syntax-table' property correctly on top-level ?\\\" comments."
-  (let ((ppss (save-excursion (backward-char) (syntax-ppss))))
-    (cond ((nth 5 ppss)			; it's quoted
-	   nil)
-	  ;; manually check if quoted.  not sure if needed because
-	  ;;   we're in a comment or outside a string
-	  ((eq ?\\ (char-before (1- (point))))
-	   nil)
-	  ((> (car ppss) 0)		; not top-level
-	   nil)
-	  ((nth 3 ppss)			; inside a string
-	   nil)
-	  ((nth 4 ppss)			; closing quote
-	   (put-text-property (1- (point)) (point)
-			      'syntax-table (string-to-syntax ">")))
-	  ((eq ?\; (char-before (1- (point)))) ; opening quote, but inside ?\; comment
-	   nil)
-	  (t				; opening quote
-	   (put-text-property (1- (point)) (point)
-			      'syntax-table (string-to-syntax "<"))))))
-
 (defconst zil-syntax-propertize-function
   (syntax-propertize-rules
    ;; "AUX", "OPTIONAL", ... are used for keyword args
    ;;   TODO: check it's within an arglist and not just a random string.
    ((rx (group "\"") (or "AUX" "OPTIONAL" "OPT" "TUPLE" "ARGS") (group "\""))
-    (1 "_") (2 "_"))
-   ;; ("\""
-   ;;  (0 (ignore (zil--top-level-commentize))))
-   )
+    (1 "_") (2 "_")))
    "Syntax property rules for ZIL mode special cases.")
 
 (define-abbrev-table 'zil-mode-abbrev-table ()
