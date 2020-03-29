@@ -18,8 +18,7 @@
 
 ;;; TODO
 
-;;  - indentation rules:
-;;    - strings with story text
+;;  - ?\; loops
 
 ;;; Code:
 
@@ -49,6 +48,7 @@
     (modify-syntax-entry ?\. "'" st)
 
     ;; Misc
+    (modify-syntax-entry ?\n "." st)
     (modify-syntax-entry ?\\ "\\" st)
     (modify-syntax-entry ?\" "\"" st)
     st))
@@ -200,8 +200,8 @@ Otherwise return nil."
 	(scan-error        nil)))))
 
 (defun zil-comment-dwim (n)
-  "Toggle comment status of sexp at point.  With a prefix, go up N
-sexps and add comment there."
+  "Toggle comment status of sexp at point.  With a prefix, go up N sexps
+and add comment there."
   (interactive "p")
 
   (save-excursion
@@ -216,6 +216,24 @@ sexps and add comment there."
 	 (up-list (- (1- n)) t)
 	 (insert ";")))))))
 
+(defun zil-indent-function (indent-point state)
+  "Indent at INDENT-POINT where STATE is `parse-partial-sexp' for INDENT-POINT."
+  (let ((pos (point))
+	(col (current-column)))
+    (save-excursion
+      (goto-char indent-point)
+      (cond ((nth 3 state)	; inside a string
+	     nil)			; ... do nothing
+	    ((and (> (car state) 0) ; \" not at top-level
+		  (looking-at "^\\s-*\""))
+	     0)			; ... left-align
+	    ((= col 0)
+	     (goto-char pos)
+	     (backward-sexp)
+	     (current-column))
+	    (t			; else)
+	     nil)))))
+
 (define-derived-mode zil-mode prog-mode "ZIL"
   "Major mode for editing ZIL code.
 
@@ -226,6 +244,7 @@ Entering this mode runs the hook `zil-mode-hook'.
   :abbrev-table zil-mode-abbrev-table
   (setq-local comment-use-syntax nil)
   (setq-local indent-line-function 'lisp-indent-line)
+  (setq-local lisp-indent-function 'zil-indent-function)
   (setq-local imenu-case-fold-search t)
   (setq-local imenu-generic-expression zil-imenu-generic-expression)
   (setq-local font-lock-multiline t)
