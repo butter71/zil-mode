@@ -18,7 +18,8 @@
 
 ;;; TODO
 
-;;  - indentation rules
+;;  - indentation rules:
+;;    - strings with story text
 
 ;;; Code:
 
@@ -224,6 +225,7 @@ Entering this mode runs the hook `zil-mode-hook'.
   :syntax-table zil-mode-syntax-table
   :abbrev-table zil-mode-abbrev-table
   (setq-local comment-use-syntax nil)
+  (setq-local indent-line-function 'lisp-indent-line)
   (setq-local imenu-case-fold-search t)
   (setq-local imenu-generic-expression zil-imenu-generic-expression)
   (setq-local font-lock-multiline t)
