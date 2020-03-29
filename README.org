@@ -1,0 +1,50 @@
+* zil-mode.el
+
+Emacs mode for editing ZIL (Zork Implementation Language) source.
+
+** Screenshot
+
+[[./screenshot.jpg]]
+
+** Features
+
+1. Syntax Highlighting
+
+2. Indentation
+
+3. Imenu
+
+** Keybindings
+zil-mode comes with one default keybinding:
+
+   | Binding | Action                                   |
+   |---------+------------------------------------------|
+   | ~M-;~   | zil-comment-dwim                         |
+
+
+** Installation
+
+Manually:
+
+#+begin_src elisp
+  (add-to-list 'load-path "/place/where/you/put/it/")
+  (require 'zil-mode)
+#+end_src
+
+** Notes
+
+- This is v0.0.1 and definitely full of bugs and unexpected behavior.
+  It is not necessarily a shining example of emacs-lisp.
+
+- Story text (for example in a TELL function) is indented at column 0
+  similar to how it appears in infocom source.  This does not currently
+  work if one of the lines starts with an atom.  For example the line
+  starting with ",TROLL" should be at column 0, but it will instead be
+  indented under "TELL".
+
+#+begin_src zil
+  <ROUTINE ...
+           <TELL
+  "You are in a maze of twisty passages.  All alike."
+  ,TROLL " is here.">
+#+end_src

@@ -3,6 +3,7 @@
 ;; Copyright (C) 2020
 
 ;; Author: me@u1f9c8.com
+;; URL: https://github.com/butter71/zil-mode
 ;; Keywords: languages zil
 ;; Version: 0.0.1
 
