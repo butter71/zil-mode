@@ -80,8 +80,9 @@
    ;;   TODO: check it's within an arglist and not just a random string.
    ((rx (group "\"") (or "AUX" "OPTIONAL" "OPT" "TUPLE" "ARGS") (group "\""))
     (1 "_") (2 "_"))
-   ("\""
-    (0 (ignore (zil--top-level-commentize)))))
+   ;; ("\""
+   ;;  (0 (ignore (zil--top-level-commentize))))
+   )
    "Syntax property rules for ZIL mode special cases.")
 
 (define-abbrev-table 'zil-mode-abbrev-table ()
@@ -103,23 +104,27 @@
     )
   "Imenu generic expression for ZIL mode.  See `imenu-generic-expression'.")
 
-(defun zil--search-commented-sexps-internal (limit)
-  "Search for a ?\\; comment forward stopping at LIMIT."
-  (when (search-forward-regexp "\\(;\\)" limit t)
+(defun zil--search-comments-internal (limit)
+  "Search for a comment forward stopping at LIMIT."
+  (when (search-forward-regexp "\\(;\\|\"\\)" limit t)
     (let* ((md (match-data))
            (start (match-beginning 1))
            (state (syntax-ppss start)))
-      ;; inside string or comment?
-      (if (or (nth 3 state)
-              (nth 4 state))
-          (zil--search-commented-sexps-internal limit)
-	(goto-char (1+ start))
-	(forward-sexp 1)
-	(setf (elt md 3) (point))
-        (set-match-data md)
-        t))))
+      (cond ((or (nth 3 state)		; inside string or comment
+		 (nth 4 state))
+	     (forward-char)
+             (zil--search-comments-internal limit))
+	    ((and (looking-at "\"")	; \" but not top-level
+		  (> (car state) 0))
+	     (forward-char)
+             (zil--search-comments-internal limit))
+	    (t
+	     (forward-sexp 1)
+	     (setf (elt md 3) (point))
+             (set-match-data md)
+             t)))))
 
-(defun zil--search-commented-sexps (limit)
+(defun zil--search-comments (limit)
   "Find commented sexps and set the match data.
 Search from point up to LIMIT.  The region that should be
 considered a comment is between `(match-beginning 1)'
@@ -127,7 +132,7 @@ and `(match-end 1)'."
   (let ((result 'retry))
     (while (and (eq result 'retry) (<= (point) limit))
       (condition-case nil
-          (setq result (zil--search-commented-sexps-internal limit))
+          (setq result (zil--search-comments-internal limit))
         (end-of-file (setq result nil))
         (scan-error  (setq result 'retry))))
     result))
@@ -200,7 +205,7 @@ and `(match-end 1)'."
        (1 font-lock-keyword-face) (2 font-lock-variable-name-face))
       (,(rx "\"" (or "AUX" "OPTIONAL" "OPT" "TUPLE" "ARGS") "\"")
        (0 font-lock-builtin-face))
-      (zil--search-commented-sexps (1 font-lock-comment-face t))))
+      (zil--search-comments (1 font-lock-comment-face t))))
   "Expressions to highlight in ZIL mode.")
 
 (defun zil--find-comment ()
