@@ -34,7 +34,7 @@
     (modify-syntax-entry '(?0 . ?9) "w" st)
     (modify-syntax-entry '(?a . ?z) "w" st)
     (modify-syntax-entry '(?A . ?Z) "w" st)
-    (modify-syntax-entry ?- "w" st)
+    (modify-syntax-entry ?\- "w" st)
     (modify-syntax-entry ?\? "w" st)
 
     ;; Delimiters
