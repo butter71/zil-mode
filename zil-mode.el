@@ -2,11 +2,9 @@
 
 ;; Copyright (C) 2020
 
-;; Author: butter
-;; Maintainer: me@u1f9c8.com
-;; Package-Requires:
-;; Keywords: zil
-;; Version: 0.0.0
+;; Author: me@u1f9c8.com
+;; Keywords: languages zil
+;; Version: 0.0.1
 
 ;; This file is not part of Emacs
 
@@ -15,10 +13,6 @@
 ;; The major mode for editing ZIL (Zork Implementation Language) code.
 ;; Keyword list borrowed from:
 ;;   https://bitbucket.org/zilf/vscode-zil-language/src/default/data/builtins/ZILF%200.8.json
-
-;;; TODO
-
-;;  - ?\; loops
 
 ;;; Code:
 
