@@ -110,7 +110,7 @@ and `(match-end 1)'."
       (condition-case nil
           (setq result (zil--search-comments-internal limit))
         (end-of-file (setq result nil))
-        (scan-error  (setq result 'retry))))
+        (scan-error  (setq result 'retry) (forward-char))))
     result))
 
 (defvar zil-font-lock-keywords
