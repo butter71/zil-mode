@@ -2,8 +2,8 @@
 
 ;; Copyright (C) 2020
 
-;; Author:
-;; Maintainer:
+;; Author: butter
+;; Maintainer: me@u1f9c8.com
 ;; Package-Requires:
 ;; Keywords: zil
 ;; Version: 0.0.0
