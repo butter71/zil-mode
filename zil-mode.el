@@ -19,7 +19,7 @@
 
 (defvar zil-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "M-;") 'zil-comment-dwim)
+    (define-key map [remap comment-dwim] 'zil-comment-dwim)
     map)
   "Keymap for zil-mode.")
 
